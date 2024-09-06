@@ -10,7 +10,7 @@ set.seed(123)
 eagles <- function (drives){
   eagles_points <- 0 
   #eagles_score_pct determined by taking team scoring percentage (45.4%; adjusted manually to 40.4% after Dallas Goedert got injured)
-  #Adjusted Eagle's scoring percentage by comparing Average Opponent's ELO compared to 49ers ELO
+  #Adjusted Eagle's scoring percentage by comparing Average Opponent's ELO (1503.18182) compared to 49ers ELO (1693)
   #final calculation: 0.404 * (1503.18182/1693) = 0.358703753
   eagles_score_pct <- 0.358703753
   brown_rec_td <- 0
@@ -124,6 +124,7 @@ niners_drives <- 11
 set.seed(234)
 niners <- function (drives){
   niners_points <- 0 
+  #niners_score_pct calculated the same way as the eagles_score_pct
   niners_score_pct <- 0.397844506
   mccaffrey_rec_td <- 0
   kittle_rec_td <- 0
@@ -235,9 +236,13 @@ do.call(rbind, replicate(100000, niners(niners_drives), simplify = FALSE)) -> Ni
 NinersTotals <- as.data.frame(NinersTotals)
 NinersTotals <- NinersTotals %>% mutate(game_number = 1:n())
 
+#joining both simulations on game_number
 SimulationResults <- left_join(EaglesTotals, NinersTotals, by = "game_number")
+#dummy variable stating if the eagles won
 SimulationResults <- SimulationResults %>% mutate(eagles_win = ifelse(as.numeric(eagles_points) > as.numeric(niners_points),1,0))
+#dummy variable stating if the niners won
 SimulationResults <- SimulationResults %>% mutate(niners_win = ifelse(as.numeric(eagles_points) < as.numeric(niners_points),1,0))
+#dummy variable stating if the game went to overtime
 SimulationResults <- SimulationResults %>% mutate(overtime = ifelse(as.numeric(eagles_points) == as.numeric(niners_points),1,0))
 
 eagles_win_prob <- mean(SimulationResults$eagles_win)
@@ -246,6 +251,7 @@ overtime <- mean(SimulationResults$overtime)
 eagles_expected_points <- mean(as.numeric(SimulationResults$eagles_points))
 niners_expected_points <- mean(as.numeric(SimulationResults$niners_points))
 
+#finding out how many 2 Rec TD games each player had as well as the probability of it happening
 brown_2plus_Td <- SimulationResults %>% filter(brown_rec_td > 1) %>% summarize(aj_games = n(),aj_pct_games = round((n()/100000)*100,2))
 smith_2plus_Td <- SimulationResults %>% filter(smith_rec_td > 1) %>% summarize(smith_games = n(), smith_pct_games = round((n()/100000)*100,2))
 swift_2plus_Td <- SimulationResults %>% filter(swift_rec_td > 1) %>% summarize(swift_games = n(), swift_pct_games = round((n()/100000)*100,2))
@@ -264,6 +270,7 @@ jennings_2plus_Td <- SimulationResults %>% filter(jennings_rec_td > 1) %>% summa
 mccloud_2Plus_Td <- SimulationResults %>% filter(mccloud_rec_td > 1) %>% summarize(mccloud_games = n(), mccloud_pct_games = round((n()/100000)*100,2))
 mitchell_2Plus_Td <- SimulationResults %>% filter(mitchell_rec_td > 1) %>% summarize(mitchell_games = n(), mitchell_pct_games = round((n()/100000)*100,2))
 
+#combining all totals into a dataframe
 X2plus_TD <- bind_cols(brown_2plus_Td,smith_2plus_Td,swift_2plus_Td,stoll_2plus_Td,zacc_2plus_Td,jones_2plus_Td,watkins_2plus_Td,mccaffrey_2plus_Td,kittle_2plus_Td,
                        samuel_2plus_Td,aiyuk_2plus_Td,juszczyk_2plus_Td,bell_2plus_Td,dwelley_2plus_Td,jennings_2plus_Td,mccloud_2Plus_Td,mitchell_2Plus_Td)
 
