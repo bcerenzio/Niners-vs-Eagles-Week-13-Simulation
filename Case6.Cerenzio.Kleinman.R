@@ -9,7 +9,7 @@ eagles_drives <- 11
 set.seed(123)
 eagles <- function (drives){
   eagles_points <- 0 
-  #determined by taking team scoring percentage (45.4%; adjusted manually to 40.4% after Dallas Goedert got injured)
+  #eagles_score_pct determined by taking team scoring percentage (45.4%; adjusted manually to 40.4% after Dallas Goedert got injured)
   #Adjusted Eagle's scoring percentage by comparing Average Opponent's ELO compared to 49ers ELO
   #final calculation: 0.404 * (1503.18182/1693) = 0.358703753
   eagles_score_pct <- 0.358703753
